@@ -1,0 +1,18 @@
+{
+  "name": "AI Trader Cam",
+  "short_name": "Trader Cam",
+  "description": "Local camera chart scanner for paper trading",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080d12",
+  "theme_color": "#080d12",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
