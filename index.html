@@ -3,294 +3,871 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#07110e">
-<title>AI Trader Cam 2.1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#07111f">
+<title>AI Trader Cam</title>
+
 <style>
-*{box-sizing:border-box}
-html,body{
- margin:0;width:100%;min-height:100%;
- overflow-x:hidden;overflow-y:auto;
- -webkit-overflow-scrolling:touch;
+:root {
+  color-scheme: dark;
+  --bg:#07111f;
+  --panel:#101e30;
+  --line:#23364d;
+  --green:#16d995;
+  --red:#ff5368;
+  --yellow:#ffc857;
+  --text:#e8f1fb;
+  --muted:#91a5ba;
 }
-body{
- background:#07110e;color:#eafff4;
- font-family:Arial,sans-serif;
- touch-action:pan-y;
+* { box-sizing:border-box; }
+html,body {
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  overflow-x:hidden;
+  overflow-y:auto;
+  touch-action:pan-y;
 }
-header{
- position:sticky;top:0;z-index:10;
- padding:16px;background:#0b1914;
- border-bottom:1px solid #17452e;
- display:flex;justify-content:space-between;align-items:center;
+body { padding:16px; }
+header { margin-bottom:16px; }
+h1 { font-size:25px; margin:0 0 5px; }
+.sub { color:var(--muted); font-size:13px; }
+.panel {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:13px;
 }
-.logo{color:#35f59a;font-weight:bold;font-size:17px}
-.status{color:#35f59a;font-size:11px}
-main{padding:12px;max-width:850px;margin:auto;padding-bottom:70px}
-.camera{
- position:relative;width:100%;aspect-ratio:16/9;
- background:#020806;border:1px solid #1b6843;
- border-radius:14px;overflow:hidden;
+.panel h2 {
+  font-size:15px;
+  margin:0 0 12px;
 }
-video{width:100%;height:100%;object-fit:contain;display:block}
-#overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.scanline{
- position:absolute;left:0;right:0;height:2px;
- background:#32ff9a;box-shadow:0 0 12px #32ff9a;
- animation:scan 3s linear infinite;pointer-events:none;
+.camera {
+  position:relative;
+  width:100%;
+  aspect-ratio:4/3;
+  overflow:hidden;
+  background:#02070d;
+  border-radius:11px;
+  border:1px solid var(--line);
 }
-@keyframes scan{from{top:0}to{top:100%}}
-button{
- width:100%;padding:15px;border:0;border-radius:10px;
- background:#19d77c;color:#04150b;font-size:15px;
- font-weight:bold;margin-top:12px;
+video,.overlay {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
 }
-button.stop{background:#263c31;color:white}
-.panel{
- background:#102019;border:1px solid #1b5437;
- border-radius:13px;padding:14px;margin-top:12px;
+.overlay { pointer-events:none; }
+.scanline {
+  position:absolute;
+  left:0;
+  right:0;
+  height:2px;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+  top:0;
+  opacity:.8;
+  animation:scan 3s linear infinite;
+  display:none;
 }
-.label{color:#8eb9a1;font-size:11px}
-.signal{font-size:27px;font-weight:bold;color:#ffd45b;margin:9px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
-.item{background:#0a1711;padding:12px;border-radius:9px}
-.value{font-size:18px;margin-top:6px}
-.green{color:#20ff88}.red{color:#ff526b}
-.small{color:#91ae9e;font-size:12px;line-height:1.6}
-footer{text-align:center;padding:20px;color:#638675;font-size:11px}
+@keyframes scan {
+  from { top:0; }
+  to { top:100%; }
+}
+.buttons {
+  display:flex;
+  gap:9px;
+  margin-top:12px;
+}
+button {
+  flex:1;
+  border:0;
+  border-radius:10px;
+  padding:13px 10px;
+  font-weight:bold;
+  font-size:14px;
+}
+#start { background:var(--green); color:#04130e; }
+#stop { background:#34465c; color:white; }
+button:disabled { opacity:.45; }
+.status {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  color:var(--muted);
+}
+.dot {
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--yellow);
+}
+.dot.active { background:var(--green); }
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.stat {
+  background:#0a1726;
+  padding:12px 8px;
+  border-radius:10px;
+  text-align:center;
+}
+.stat strong {
+  display:block;
+  font-size:23px;
+  margin-bottom:5px;
+}
+.stat span {
+  color:var(--muted);
+  font-size:11px;
+}
+.green { color:var(--green); }
+.red { color:var(--red); }
+.yellow { color:var(--yellow); }
+.signal {
+  text-align:center;
+  padding:17px;
+  border-radius:11px;
+  background:#0a1726;
+}
+.signal strong {
+  display:block;
+  font-size:25px;
+  margin-bottom:6px;
+}
+.signal small { color:var(--muted); }
+.info {
+  font-size:13px;
+  line-height:1.6;
+  color:var(--muted);
+}
+.bar {
+  height:7px;
+  background:#26374b;
+  border-radius:8px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.bar div {
+  height:100%;
+  width:0%;
+  background:var(--green);
+  transition:width .2s;
+}
+.log {
+  font-size:12px;
+  line-height:1.6;
+  color:var(--muted);
+  max-height:150px;
+  overflow:auto;
+  overflow-y:auto;
+}
+footer {
+  text-align:center;
+  color:#657c94;
+  font-size:11px;
+  padding:8px 0 20px;
+}
 </style>
 </head>
+
 <body>
+
 <header>
- <div class="logo">◉ AI TRADER CAM 2.1</div>
- <div class="status" id="status">● SIAP</div>
+  <h1>🤖 AI TRADER CAM</h1>
+  <div class="sub">Live Chart Vision • Candle Recognition Test</div>
 </header>
 
-<main>
- <div class="camera" id="stage">
-  <video id="video" autoplay muted playsinline></video>
-  <canvas id="overlay"></canvas>
-  <div class="scanline" id="scanline" hidden></div>
- </div>
+<section class="panel">
+  <h2>📷 Kamera pemindai</h2>
 
- <button id="start">AKTIFKAN KAMERA LIVE</button>
- <button id="stop" class="stop" hidden>MATIKAN KAMERA</button>
-
- <div class="panel">
-  <div class="label">PEMINDAIAN OTOMATIS</div>
-  <div class="signal" id="signal">MENUNGGU</div>
-  <div class="small" id="message">Aktifkan kamera dan arahkan ke chart MT5.</div>
-  <div class="grid">
-   <div class="item"><div class="label">OBJEK HIJAU</div><div class="value green" id="greens">0</div></div>
-   <div class="item"><div class="label">OBJEK MERAH</div><div class="value red" id="reds">0</div></div>
-   <div class="item"><div class="label">TOTAL OBJEK</div><div class="value" id="total">0</div></div>
-   <div class="item"><div class="label">MODE</div><div class="value green" id="mode">STANDBY</div></div>
+  <div class="camera" id="cameraBox">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay" class="overlay"></canvas>
+    <div class="scanline" id="scanline"></div>
   </div>
- </div>
 
- <div class="panel">
-  <div class="label">STATUS ANALISIS</div>
-  <div class="signal" id="analysis">BELUM ADA DATA</div>
-  <div class="small" id="detail">Menunggu deteksi visual.</div>
- </div>
+  <div class="buttons">
+    <button id="start">MULAI PEMINDAIAN</button>
+    <button id="stop" disabled>BERHENTI</button>
+  </div>
 
- <div class="panel small">
-  <b>CATATAN DETEKSI</b><br>
-  Sistem ini mengelompokkan piksel merah dan hijau berdasarkan
-  posisi kolom. Ini masih prototipe visual, belum AI pengenal
-  candle yang terlatih. Garis grid, tulisan, indikator, dan
-  pantulan dapat menyebabkan deteksi palsu.
- </div>
+  <div class="status" style="margin-top:12px">
+    <span class="dot" id="dot"></span>
+    <span id="status">Kamera belum aktif</span>
+  </div>
+</section>
 
- <div class="panel small">
-  <b>PANDUAN</b><br>
-  1. Buka chart MT5 di HP kedua.<br>
-  2. Arahkan kamera iPhone ke chart.<br>
-  3. Perbesar candle agar terlihat jelas.<br>
-  4. Hindari pantulan cahaya.<br>
-  5. Pemindaian berlangsung otomatis.
- </div>
-</main>
+<section class="panel">
+  <h2>📊 Hasil deteksi langsung</h2>
+  <div class="stats">
+    <div class="stat">
+      <strong class="green" id="greens">0</strong>
+      <span>Objek hijau</span>
+    </div>
+    <div class="stat">
+      <strong class="red" id="reds">0</strong>
+      <span>Objek merah</span>
+    </div>
+    <div class="stat">
+      <strong id="total">0</strong>
+      <span>Total objek</span>
+    </div>
+  </div>
+</section>
 
-<footer>AI TRADER CAM 2.1 · LIVE VISUAL PROTOTYPE</footer>
-<canvas id="work" hidden></canvas>
+<section class="panel">
+  <h2>🧠 Analisis pergerakan</h2>
+  <div class="signal">
+    <strong id="signal" class="yellow">MENUNGGU</strong>
+    <small id="analysis">Arah pergerakan belum dianalisis</small>
+  </div>
+  <p class="info" id="detail">
+    Arah akan diperkirakan setelah beberapa objek candle terdeteksi.
+  </p>
+</section>
+
+<section class="panel">
+  <h2>🔍 Kualitas gambar</h2>
+  <div class="info" id="qualityText">Belum ada gambar untuk diperiksa.</div>
+  <div class="bar"><div id="qualityBar"></div></div>
+</section>
+
+<section class="panel">
+  <h2>⚙️ Status AI Controller</h2>
+  <div class="info" id="controller">
+    Menunggu kamera dimulai.
+  </div>
+</section>
+
+<section class="panel">
+  <h2>📋 Catatan pemindaian</h2>
+  <div class="log" id="log">Sistem siap. Tekan Mulai Pemindaian.</div>
+</section>
+
+<footer>
+  AI Trader Cam • Pengujian lokal di perangkat iPhone
+</footer>
 
 <script>
-const video=document.getElementById("video");
-const overlay=document.getElementById("overlay");
-const ctx=overlay.getContext("2d");
-const work=document.getElementById("work");
-const wctx=work.getContext("2d",{willReadFrequently:true});
-const stage=document.getElementById("stage");
-const W=640,H=360;
+"use strict";
 
-let stream=null,running=false,busy=false,timer=null;
-const el=id=>document.getElementById(id);
+/* =====================================
+   PENGATURAN DASAR
+===================================== */
 
-el("start").addEventListener("click",startCamera);
-el("stop").addEventListener("click",stopCamera);
+const $ = id => document.getElementById(id);
 
-async function startCamera(){
- try{
-  if(!navigator.mediaDevices?.getUserMedia){
-   throw new Error("Kamera memerlukan HTTPS dan browser yang mendukung.");
+const video = $("video");
+const overlay = $("overlay");
+const ctx = overlay.getContext("2d", {alpha:true});
+
+const work = document.createElement("canvas");
+const workCtx = work.getContext("2d", {
+  willReadFrequently:true
+});
+
+const CONFIG = {
+  width:480,
+  height:270,
+  scanInterval:350,
+  minArea:5,
+  maxWidth:24,
+  minHeight:3,
+  maxHeight:150,
+  maxObjects:100
+};
+
+let cameraStream = null;
+let running = false;
+let timer = null;
+let lastObjects = [];
+let frameCount = 0;
+let startTime = 0;
+
+/* =====================================
+   CATATAN SISTEM
+===================================== */
+
+function log(message) {
+  const time = new Date().toLocaleTimeString("id-ID");
+  const box = $("log");
+
+  box.innerHTML =
+    `<div>[${time}] ${escapeHTML(message)}</div>` +
+    box.innerHTML;
+
+  while(box.children.length > 30) {
+    box.removeChild(box.lastChild);
   }
-  stream=await navigator.mediaDevices.getUserMedia({
-   audio:false,
-   video:{
-    facingMode:{ideal:"environment"},
-    width:{ideal:1280},
-    height:{ideal:720}
-   }
-  });
-  video.srcObject=stream;
-  await video.play();
-  running=true;
-  el("status").textContent="● KAMERA LIVE";
-  el("mode").textContent="LIVE SCAN";
-  el("start").hidden=true;
-  el("stop").hidden=false;
-  el("scanline").hidden=false;
-  scanLoop();
- }catch(error){
-  el("status").textContent="● KAMERA ERROR";
-  el("message").textContent=error.message||"Periksa izin kamera Safari.";
- }
 }
 
-function stopCamera(){
- running=false;
- if(timer)clearTimeout(timer);
- if(stream)stream.getTracks().forEach(track=>track.stop());
- stream=null;
- video.srcObject=null;
- ctx.clearRect(0,0,overlay.width,overlay.height);
- el("status").textContent="● KAMERA MATI";
- el("mode").textContent="STANDBY";
- el("signal").textContent="MENUNGGU";
- el("message").textContent="Kamera dimatikan.";
- el("scanline").hidden=true;
- el("start").hidden=false;
- el("stop").hidden=true;
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
 }
 
-function scanLoop(){
- if(!running)return;
- if(!busy&&video.readyState>=2){
-  busy=true;
-  try{detectCandles();}
-  catch(e){el("message").textContent="Pemindaian terganggu. Mencoba kembali.";}
-  busy=false;
- }
- timer=setTimeout(scanLoop,350);
-}
+/* =====================================
+   MODUL KAMERA
+===================================== */
 
-function detectCandles(){
- work.width=W;work.height=H;
- wctx.drawImage(video,0,0,W,H);
- const pixels=wctx.getImageData(0,0,W,H).data;
- const greenColumns=new Array(W).fill(null);
- const redColumns=new Array(W).fill(null);
+const CameraEngine = {
 
- for(let x=0;x<W;x++){
-  let gMin=H,gMax=-1,gCount=0;
-  let rMin=H,rMax=-1,rCount=0;
-
-  for(let y=0;y<H;y++){
-   const i=(y*W+x)*4;
-   const r=pixels[i],g=pixels[i+1],b=pixels[i+2];
-   const isGreen=g>65&&g>r*1.2&&g>b*.9;
-   const isRed=r>75&&r>g*1.22&&r>b*1.12;
-
-   if(isGreen){
-    gCount++;gMin=Math.min(gMin,y);gMax=Math.max(gMax,y);
-   }else if(isRed){
-    rCount++;rMin=Math.min(rMin,y);rMax=Math.max(rMax,y);
-   }
-  }
-  if(gCount>=2)greenColumns[x]={min:gMin,max:gMax,count:gCount};
-  if(rCount>=2)redColumns[x]={min:rMin,max:rMax,count:rCount};
- }
-
- function groupColumns(columns,color){
-  const boxes=[];
-  let current=null,gap=0;
-  function finish(){
-   if(!current)return;
-   const width=current.maxX-current.minX+1;
-   const height=current.maxY-current.minY+1;
-   if(current.count>=9&&width>=2&&width<=28&&height>=7&&height<=125){
-    boxes.push({x:current.minX,y:current.minY,w:width,h:height,color});
-   }
-   current=null;
-  }
-
-  for(let x=0;x<W;x++){
-   const col=columns[x];
-   if(col){
-    if(!current||gap>2){
-     finish();
-     current={minX:x,maxX:x,minY:col.min,maxY:col.max,count:col.count};
-    }else{
-     current.maxX=x;
-     current.minY=Math.min(current.minY,col.min);
-     current.maxY=Math.max(current.maxY,col.max);
-     current.count+=col.count;
+  async start() {
+    if(!navigator.mediaDevices ||
+       !navigator.mediaDevices.getUserMedia) {
+      throw new Error(
+        "Browser tidak mendukung akses kamera. Buka melalui HTTPS."
+      );
     }
-    gap=0;
-   }else if(current)gap++;
+
+    cameraStream =
+      await navigator.mediaDevices.getUserMedia({
+        audio:false,
+        video:{
+          facingMode:{ideal:"environment"},
+          width:{ideal:1280},
+          height:{ideal:720}
+        }
+      });
+
+    video.srcObject = cameraStream;
+
+    await video.play();
+
+    return true;
+  },
+
+  stop() {
+    if(cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+
+    video.srcObject = null;
+  },
+
+  ready() {
+    return video.readyState >= 2 &&
+      video.videoWidth > 0 &&
+      video.videoHeight > 0;
   }
-  finish();
-  return boxes;
- }
+};
 
- const greens=groupColumns(greenColumns,"green");
- const reds=groupColumns(redColumns,"red");
- const boxes=[...greens,...reds];
+/* =====================================
+   MODUL KUALITAS GAMBAR
+===================================== */
 
- const rect=stage.getBoundingClientRect();
- const dpr=Math.min(window.devicePixelRatio||1,2);
- overlay.width=Math.round(rect.width*dpr);
- overlay.height=Math.round(rect.height*dpr);
- ctx.clearRect(0,0,overlay.width,overlay.height);
+const QualityEngine = {
 
- const videoRatio=W/H,stageRatio=rect.width/rect.height;
- let drawW,drawH,offsetX,offsetY;
- if(stageRatio>videoRatio){
-  drawH=overlay.height;drawW=drawH*videoRatio;
-  offsetX=(overlay.width-drawW)/2;offsetY=0;
- }else{
-  drawW=overlay.width;drawH=drawW/videoRatio;
-  offsetX=0;offsetY=(overlay.height-drawH)/2;
- }
+  check(imageData) {
+    const data = imageData.data;
+    let brightness = 0;
+    let count = 0;
+    let contrast = 0;
+    const values = [];
 
- for(const b of boxes){
-  const sx=drawW/W,sy=drawH/H;
-  ctx.strokeStyle=b.color==="green"?"#20ff88":"#ff526b";
-  ctx.lineWidth=2*dpr;
-  ctx.strokeRect(offsetX+b.x*sx,offsetY+b.y*sy,b.w*sx,b.h*sy);
- }
+    for(let i=0; i<data.length; i+=160) {
+      const r=data[i];
+      const g=data[i+1];
+      const b=data[i+2];
 
- el("greens").textContent=greens.length;
- el("reds").textContent=reds.length;
- el("total").textContent=boxes.length;
+      const value=(r+g+b)/3;
+      brightness+=value;
+      values.push(value);
+      count++;
+    }
 
- if(boxes.length){
-  el("signal").textContent="MENDETEKSI";
-  el("message").textContent="Objek warna ditemukan. Belum dipastikan sebagai candle.";
-  el("analysis").textContent="Menunggu validasi bentuk candle.";
-  el("detail").textContent="Deteksi warna berjalan otomatis, bukan sinyal trading.";
- }else{
-  el("signal").textContent="MENCARI";
-  el("message").textContent="Arahkan kamera ke chart dengan candle jelas.";
-  el("analysis").textContent="Belum ada objek terdeteksi.";
-  el("detail").textContent="Pastikan chart cukup terang dan tidak terpantul.";
- }
-}
+    if(!count) {
+      return {score:0,label:"Gambar tidak tersedia"};
+    }
+
+    brightness/=count;
+
+    for(const value of values) {
+      contrast+=Math.abs(value-brightness);
+    }
+
+    contrast/=count;
+
+    let score=100;
+
+    if(brightness<35) score-=35;
+    if(brightness>225) score-=25;
+    if(contrast<12) score-=25;
+
+    score=Math.max(0,Math.min(100,score));
+
+    let label="Gambar cukup baik";
+
+    if(score<45) label="Gambar kurang jelas";
+    else if(score<70) label="Gambar perlu diperbaiki";
+
+    return {score,label,brightness,contrast};
+  }
+};
+
+/* =====================================
+   MODUL DETEKSI WARNA
+===================================== */
+
+const VisionEngine = {
+
+  classify(r,g,b) {
+
+    const max=Math.max(r,g,b);
+    const min=Math.min(r,g,b);
+
+    if(max<65 || max-min<35) return 0;
+
+    // Hijau: komponen hijau dominan
+    if(g>r*1.22 && g>b*1.08 && g>75) {
+      return 1;
+    }
+
+    // Merah: komponen merah dominan
+    if(r>g*1.25 && r>b*1.18 && r>85) {
+      return -1;
+    }
+
+    return 0;
+  },
+
+  detect(imageData,width,height) {
+
+    const data=imageData.data;
+    const labels=new Int8Array(width*height);
+
+    // Klasifikasi piksel
+    for(let y=0;y<height;y++) {
+      for(let x=0;x<width;x++) {
+        const p=(y*width+x)*4;
+
+        labels[y*width+x]=this.classify(
+          data[p],
+          data[p+1],
+          data[p+2]
+        );
+      }
+    }
+
+    // Pengelompokan piksel yang saling terhubung
+    const visited=new Uint8Array(width*height);
+    const objects=[];
+
+    const queueX=new Int16Array(width*height);
+    const queueY=new Int16Array(width*height);
+
+    for(let y=0;y<height;y++) {
+      for(let x=0;x<width;x++) {
+
+        const start=y*width+x;
+        const color=labels[start];
+
+        if(color===0 || visited[start]) continue;
+
+        let head=0;
+        let tail=0;
+
+        queueX[tail]=x;
+        queueY[tail]=y;
+        tail++;
+
+        visited[start]=1;
+
+        let minX=x,maxX=x,minY=y,maxY=y;
+        let area=0;
+
+        while(head<tail) {
+          const cx=queueX[head];
+          const cy=queueY[head];
+          head++;
+
+          area++;
+
+          minX=Math.min(minX,cx);
+          maxX=Math.max(maxX,cx);
+          minY=Math.min(minY,cy);
+          maxY=Math.max(maxY,cy);
+
+          for(let dy=-1;dy<=1;dy++) {
+            for(let dx=-1;dx<=1;dx++) {
+
+              if(dx===0 && dy===0) continue;
+
+              const nx=cx+dx;
+              const ny=cy+dy;
+
+              if(nx<0 || ny<0 ||
+                 nx>=width || ny>=height) continue;
+
+              const ni=ny*width+nx;
+
+              if(!visited[ni] && labels[ni]===color) {
+                visited[ni]=1;
+
+                if(tail<queueX.length) {
+                  queueX[tail]=nx;
+                  queueY[tail]=ny;
+                  tail++;
+                }
+              }
+            }
+          }
+        }
+
+        const w=maxX-minX+1;
+        const h=maxY-minY+1;
+
+        if(
+          area>=CONFIG.minArea &&
+          w<=CONFIG.maxWidth &&
+          h>=CONFIG.minHeight &&
+          h<=CONFIG.maxHeight
+        ) {
+          objects.push({
+            x:minX,
+            y:minY,
+            w,
+            h,
+            color,
+            area,
+            centerX:(minX+maxX)/2,
+            centerY:(minY+maxY)/2
+          });
+        }
+
+        if(objects.length>=CONFIG.maxObjects) {
+          return objects;
+        }
+      }
+    }
+
+    return objects;
+  }
+};
+
+/* =====================================
+   MODUL ANALISIS URUTAN OBJEK
+===================================== */
+
+const MarketEngine = {
+
+  analyze(objects) {
+
+    const sorted=[...objects].sort(
+      (a,b)=>a.centerX-b.centerX
+    );
+
+    if(sorted.length<4) {
+      return {
+        direction:"MENUNGGU",
+        description:"Belum cukup objek untuk membaca kecenderungan.",
+        confidence:0
+      };
+    }
+
+    // Kelompokkan objek berdasarkan posisi horizontal.
+    // Ini hanya pendekatan sementara, bukan candle final.
+    const groups=[];
+
+    for(const object of sorted) {
+      let group=groups.find(item =>
+        Math.abs(item.x-object.x)<=5
+      );
+
+      if(!group) {
+        group={
+          x:object.x,
+          y:object.centerY,
+          colors:[object.color]
+        };
+        groups.push(group);
+      } else {
+        group.y=(group.y+object.centerY)/2;
+        group.colors.push(object.color);
+      }
+    }
+
+    const usable=groups.slice(-12);
+
+    if(usable.length<4) {
+      return {
+        direction:"MENUNGGU",
+        description:"Objek candle belum cukup terpisah.",
+        confidence:0
+      };
+    }
+
+    const first=usable.slice(0,Math.floor(usable.length/2));
+    const last=usable.slice(Math.floor(usable.length/2));
+
+    const average=arr =>
+      arr.reduce((sum,item)=>sum+item.y,0)/arr.length;
+
+    const oldY=average(first);
+    const newY=average(last);
+
+    // Pada gambar, posisi Y yang lebih kecil berarti lebih tinggi.
+    const difference=oldY-newY;
+
+    if(difference>5) {
+      return {
+        direction:"NAIK",
+        description:"Posisi objek terbaru cenderung lebih tinggi.",
+        confidence:Math.min(75,Math.round(difference*2))
+      };
+    }
+
+    if(difference<-5) {
+      return {
+        direction:"TURUN",
+        description:"Posisi objek terbaru cenderung lebih rendah.",
+        confidence:Math.min(75,Math.round(Math.abs(difference)*2))
+      };
+    }
+
+    return {
+      direction:"SIDEWAYS",
+      description:"Belum terlihat kecenderungan arah yang jelas.",
+      confidence:30
+    };
+  }
+};
+
+/* =====================================
+   MODUL PENGGAMBARAN
+===================================== */
+
+const DisplayEngine = {
+
+  draw(objects,width,height) {
+
+    const scaleX=overlay.width/width;
+    const scaleY=overlay.height/height;
+
+    ctx.clearRect(0,0,overlay.width,overlay.height);
+
+    for(const object of objects) {
+
+      const color=object.color===1
+        ? "#16d995"
+        : "#ff5368";
+
+      ctx.strokeStyle=color;
+      ctx.lineWidth=2;
+
+      ctx.strokeRect(
+        object.x*scaleX,
+        object.y*scaleY,
+        object.w*scaleX,
+        object.h*scaleY
+      );
+    }
+  }
+};
+
+/* =====================================
+   MODUL AI CONTROLLER
+===================================== */
+
+const AIController = {
+
+  async start() {
+
+    if(running) return;
+
+    $("status").textContent="Mengaktifkan kamera...";
+    $("controller").textContent="Memulai Camera Engine.";
+
+    try {
+      await CameraEngine.start();
+
+      if(!CameraEngine.ready()) {
+        throw new Error("Kamera belum menghasilkan gambar.");
+      }
+
+      running=true;
+      startTime=Date.now();
+
+      $("start").disabled=true;
+      $("stop").disabled=false;
+      $("dot").classList.add("active");
+      $("status").textContent="Kamera aktif • Pemindaian berjalan";
+      $("scanline").style.display="block";
+
+      log("Kamera berhasil diaktifkan.");
+      log("AI Controller mulai memindai.");
+
+      this.loop();
+
+    } catch(error) {
+
+      $("status").textContent="Gagal mengaktifkan kamera";
+      $("controller").textContent=error.message;
+
+      log("Kesalahan: "+error.message);
+
+      CameraEngine.stop();
+    }
+  },
+
+  stop() {
+
+    running=false;
+
+    if(timer) {
+      clearTimeout(timer);
+      timer=null;
+    }
+
+    CameraEngine.stop();
+
+    ctx.clearRect(0,0,overlay.width,overlay.height);
+
+    $("start").disabled=false;
+    $("stop").disabled=true;
+    $("dot").classList.remove("active");
+    $("status").textContent="Pemindaian dihentikan";
+    $("scanline").style.display="none";
+
+    $("controller").textContent=
+      "AI Controller berhenti. Kamera sudah dimatikan.";
+
+    log("Pemindaian dihentikan.");
+  },
+
+  loop() {
+
+    if(!running) return;
+
+    try {
+      this.scan();
+    } catch(error) {
+      log("Kesalahan pemindaian: "+error.message);
+    }
+
+    if(running) {
+      timer=setTimeout(
+        ()=>this.loop(),
+        CONFIG.scanInterval
+      );
+    }
+  },
+
+  scan() {
+
+    if(!CameraEngine.ready()) return;
+
+    const width=CONFIG.width;
+    const height=CONFIG.height;
+
+    work.width=width;
+    work.height=height;
+
+    overlay.width=width;
+    overlay.height=height;
+
+    workCtx.drawImage(video,0,0,width,height);
+
+    const imageData=workCtx.getImageData(
+      0,0,width,height
+    );
+
+    const quality=QualityEngine.check(imageData);
+
+    const objects=VisionEngine.detect(
+      imageData,width,height
+    );
+
+    const greenCount=objects.filter(
+      item=>item.color===1
+    ).length;
+
+    const redCount=objects.filter(
+      item=>item.color===-1
+    ).length;
+
+    DisplayEngine.draw(objects,width,height);
+
+    const market=MarketEngine.analyze(objects);
+
+    $("greens").textContent=greenCount;
+    $("reds").textContent=redCount;
+    $("total").textContent=objects.length;
+
+    $("qualityText").textContent=
+      quality.label+" • Nilai pemeriksaan: "+quality.score+"/100";
+
+    $("qualityBar").style.width=quality.score+"%";
+
+    $("signal").textContent=market.direction;
+    $("analysis").textContent=market.description;
+
+    $("signal").className=
+      market.direction==="NAIK" ? "green" :
+      market.direction==="TURUN" ? "red" : "yellow";
+
+    $("detail").textContent=
+      "Perkiraan kecenderungan gambar: "+
+      market.direction+
+      ". Nilai indikasi: "+
+      market.confidence+
+      "%. Ini bukan sinyal trading.";
+
+    frameCount++;
+
+    $("controller").textContent=
+      "Status: aktif. "+
+      "Jumlah pemeriksaan: "+frameCount+
+      ". Objek warna terdeteksi: "+objects.length+
+      ". Sumber data harga broker: belum terhubung.";
+
+    if(frameCount%10===0) {
+      log(
+        "Pemindaian "+frameCount+
+        " | Hijau "+greenCount+
+        " | Merah "+redCount+
+        " | Kualitas "+quality.score
+      );
+    }
+
+    lastObjects=objects;
+  }
+};
+
+/* =====================================
+   TOMBOL
+===================================== */
+
+$("start").addEventListener(
+  "click",
+  ()=>AIController.start()
+);
+
+$("stop").addEventListener(
+  "click",
+  ()=>AIController.stop()
+);
 
 window.addEventListener("pagehide",()=>{
- if(stream)stream.getTracks().forEach(track=>track.stop());
+  AIController.stop();
 });
+
+log("AI Trader Cam siap digunakan.");
 </script>
+
 </body>
 </html>
