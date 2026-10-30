@@ -1,544 +1,547 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#081321">
-<title>AI Trader Cam - Demo Lokal</title>
+<meta name="theme-color" content="#071321">
+<title>AI Trader Cam Pro</title>
 <style>
-:root{color-scheme:dark;--bg:#081321;--panel:#102033;--line:#263d55;--txt:#eaf2fb;--muted:#9bb0c5;--green:#20d99a;--red:#ff6477;--yellow:#ffd166}
+:root{
+ --bg:#071321;--panel:#102033;--panel2:#091827;
+ --line:#294057;--txt:#edf5ff;--muted:#9bb0c5;
+ --green:#20d99a;--red:#ff6477;--yellow:#ffd166;
+}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Arial,sans-serif;overflow-x:hidden}
-body{padding:15px;touch-action:pan-y}
-header{margin:3px 0 15px}
-h1{font-size:24px;margin:0 0 4px}
-.muted{color:var(--muted);font-size:12px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:13px;margin:0 0 12px}
-.panel h2{font-size:15px;margin:0 0 11px}
-.camera{position:relative;aspect-ratio:4/3;background:#02070d;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
-video,.overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+html,body{margin:0;background:var(--bg);color:var(--txt);
+font-family:Arial,sans-serif;overflow-x:hidden}
+body{padding:14px}
+header{margin:5px 0 16px}
+h1{font-size:24px;margin:0 0 5px}
+h2{font-size:15px;margin:0 0 12px}
+.panel{background:var(--panel);border:1px solid var(--line);
+border-radius:14px;padding:13px;margin-bottom:12px}
+.muted,.note{color:var(--muted);font-size:12px;line-height:1.55}
+.camera{position:relative;background:#02070d;border-radius:10px;
+overflow:hidden;aspect-ratio:4/3}
+video,.overlay{position:absolute;inset:0;width:100%;height:100%;
+object-fit:contain}
 .overlay{pointer-events:none}
-.scanline{position:absolute;left:0;right:0;height:2px;background:var(--green);box-shadow:0 0 12px var(--green);display:none;animation:scan 2.8s linear infinite}
-@keyframes scan{from{top:0}to{top:100%}}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .buttons{display:flex;gap:8px;margin-top:10px}
-button,select{border:1px solid var(--line);border-radius:10px;padding:12px;background:#20364d;color:white;font-weight:700;font-size:13px}
+button,select{padding:12px;border:1px solid var(--line);
+border-radius:10px;background:#20364d;color:white;font-weight:bold}
 button{flex:1}
-button.primary{background:var(--green);color:#062015;border:0}
+button.primary{background:var(--green);color:#052017;border:0}
 button:disabled{opacity:.4}
 select{width:100%;margin-top:6px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{background:#091827;border-radius:10px;padding:11px 5px;text-align:center}
-.stat b{display:block;font-size:22px}
-.stat span{font-size:10px;color:var(--muted)}
-.green{color:var(--green)}
-.red{color:var(--red)}
-.yellow{color:var(--yellow)}
-.signal{text-align:center;background:#091827;padding:15px;border-radius:11px}
-.signal b{font-size:25px;display:block}
+.row{display:flex;gap:9px}
+.row>*{flex:1;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .metricgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.metric{background:#091827;padding:10px;border-radius:9px}
-.metric span{display:block;color:var(--muted);font-size:11px}
-.metric b{font-size:16px}
-.status{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px;color:var(--muted)}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--yellow)}
+.stat,.metric{background:var(--panel2);padding:10px 6px;
+border-radius:9px;text-align:center}
+.stat b{font-size:21px;display:block}
+.stat span,.metric span{font-size:10px;color:var(--muted)}
+.metric{text-align:left;padding:11px}
+.metric b{display:block;font-size:15px;margin-top:5px}
+.green{color:var(--green)}.red{color:var(--red)}
+.yellow{color:var(--yellow)}
+.signal{text-align:center;background:var(--panel2);
+border-radius:11px;padding:16px}
+.signal b{font-size:27px;display:block;margin-bottom:5px}
+.status{display:flex;gap:8px;align-items:center;
+font-size:12px;color:var(--muted);margin-top:10px}
+.dot{height:9px;width:9px;border-radius:50%;background:var(--yellow)}
 .dot.on{background:var(--green)}
-.note{font-size:12px;line-height:1.55;color:var(--muted)}
-.log{max-height:125px;overflow:auto;font-size:11px;line-height:1.6;color:var(--muted)}
-.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#1b344b;color:#c6d8e8;font-size:10px}
-.warning{border-color:#765d2c}
-.warning strong{color:var(--yellow)}
-footer{text-align:center;color:#71869b;font-size:10px;padding:6px 0 20px}
+.pill{display:inline-block;padding:4px 8px;border-radius:20px;
+background:#1c344a;color:#cbdceb;font-size:10px}
+.bar{height:7px;background:#2a4057;border-radius:9px;overflow:hidden;margin-top:7px}
+.bar i{display:block;height:100%;width:0;background:var(--green)}
+.log{font-size:11px;color:var(--muted);max-height:130px;overflow:auto;line-height:1.6}
+table{width:100%;border-collapse:collapse;font-size:11px}
+td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left}
+footer{text-align:center;color:#71869b;font-size:10px;padding:8px}
 </style>
 </head>
 <body>
 
 <header>
-<h1>🤖 AI TRADER CAM</h1>
-<div class="muted">Demo lokal • Kamera saja • Tanpa API • Tanpa eksekusi transaksi</div>
+<h1>🤖 AI TRADER CAM PRO</h1>
+<div class="muted">Local Vision • Multi Analysis • No API • Demo Mode</div>
 </header>
 
 <section class="panel">
-<h2>📷 Pemindai chart MT5</h2>
+<h2>📷 Kamera pemindai MT5</h2>
 <div class="camera">
 <video id="video" autoplay muted playsinline></video>
 <canvas id="overlay" class="overlay"></canvas>
-<div id="scanline" class="scanline"></div>
 </div>
 <div class="buttons">
-<button id="start" class="primary">MULAI PEMINDAIAN</button>
+<button id="start" class="primary">MULAI AI</button>
 <button id="stop" disabled>BERHENTI</button>
 </div>
-<div class="status">
-<i id="dot" class="dot"></i>
-<span id="status">Kamera belum aktif</span>
-</div>
-<p class="muted">Arahkan kamera iPhone ke chart di HP kedua. Usahakan chart memenuhi layar kamera, tidak miring, tidak silau, dan candle terlihat jelas.</p>
+<div class="status"><i id="dot" class="dot"></i><span id="status">Kamera belum aktif</span></div>
+<p class="note">Arahkan kamera iPhone ke chart MT5 pada HP kedua. Usahakan chart memenuhi gambar dan sumbu harga terlihat. Gunakan chart tanpa perspektif miring atau pantulan cahaya.</p>
 </section>
 
 <section class="panel">
-<h2>⚙️ Pengaturan uji</h2>
+<h2>⚙️ Pengaturan analisis</h2>
 <div class="row">
-<label style="flex:1;font-size:12px">Instrumen
-<select id="instrument">
-<option>EURUSD</option>
-<option>GBPUSD</option>
-<option>USDJPY</option>
-<option>XAUUSD</option>
-<option>AUDUSD</option>
-<option>USDCAD</option>
-</select>
-</label>
-<label style="flex:1;font-size:12px">Timeframe
-<select id="timeframe">
-<option>M1</option>
-<option>M5</option>
-<option>M15</option>
-<option>M30</option>
-<option>H1</option>
-<option>H4</option>
-</select>
-</label>
+<label class="muted">Instrumen
+<select id="symbol">
+<option>EURUSD</option><option>GBPUSD</option>
+<option>USDJPY</option><option>XAUUSD</option>
+<option>AUDUSD</option><option>USDCAD</option>
+</select></label>
+<label class="muted">Timeframe chart
+<select id="tf">
+<option>M1</option><option>M5</option><option>M15</option>
+<option>M30</option><option>H1</option><option>H4</option>
+</select></label>
 </div>
-<div class="muted" style="margin-top:8px">Pilihan ini hanya label pencatatan. Aplikasi belum bisa membaca otomatis simbol/timeframe MT5 dari gambar.</div>
+<div class="row" style="margin-top:9px">
+<label class="muted">Risiko simulasi (%)
+<select id="risk"><option>0.5</option><option selected>1</option><option>2</option></select></label>
+<label class="muted">Jumlah candle minimal
+<select id="minbars"><option>8</option><option selected>12</option><option>20</option></select></label>
+</div>
+<p class="note">Simbol dan timeframe adalah label pilihan pengguna, belum dibaca otomatis dari MT5.</p>
 </section>
 
 <section class="panel">
-<h2>🔎 Hasil deteksi visual</h2>
+<h2>👁️ Vision Engine</h2>
 <div class="grid">
-<div class="stat"><b id="greens" class="green">0</b><span>Kelompok hijau</span></div>
-<div class="stat"><b id="reds" class="red">0</b><span>Kelompok merah</span></div>
-<div class="stat"><b id="total">0</b><span>Objek terdeteksi</span></div>
+<div class="stat"><b id="greenCount" class="green">0</b><span>Objek hijau</span></div>
+<div class="stat"><b id="redCount" class="red">0</b><span>Objek merah</span></div>
+<div class="stat"><b id="barCount">0</b><span>Perkiraan candle</span></div>
 </div>
 <div class="status">
-<span class="pill" id="theme">Tema: menunggu</span>
-<span class="pill" id="fps">Pemindaian: 0</span>
+<span class="pill" id="theme">Tema: -</span>
+<span class="pill" id="quality">Kualitas: -</span>
+<span class="pill" id="scanCount">Scan: 0</span>
 </div>
+<p class="note" id="visionNote">Menunggu gambar kamera.</p>
 </section>
 
 <section class="panel">
-<h2>🧠 Analisis visual sementara</h2>
+<h2>🕯️ Candle Recognition</h2>
+<div class="metricgrid">
+<div class="metric"><span>Pola terakhir</span><b id="pattern">-</b></div>
+<div class="metric"><span>Arah candle terakhir</span><b id="lastCandle">-</b></div>
+<div class="metric"><span>Open / Close relatif</span><b id="oc">-</b></div>
+<div class="metric"><span>High / Low relatif</span><b id="hl">-</b></div>
+</div>
+<p class="note" id="candleNote">OHLC relatif adalah koordinat gambar, bukan harga broker.</p>
+</section>
+
+<section class="panel">
+<h2>📈 Technical Analysis</h2>
+<div class="metricgrid">
+<div class="metric"><span>RSI perkiraan</span><b id="rsi">-</b></div>
+<div class="metric"><span>EMA cepat / lambat</span><b id="ema">-</b></div>
+<div class="metric"><span>MACD perkiraan</span><b id="macd">-</b></div>
+<div class="metric"><span>Bollinger Bands</span><b id="bb">-</b></div>
+<div class="metric"><span>Tren visual</span><b id="trend">-</b></div>
+<div class="metric"><span>Momentum visual</span><b id="momentum">-</b></div>
+</div>
+<p class="note">Indikator dihitung dari rekonstruksi posisi candle pada gambar, bukan dari data harga aktual.</p>
+</section>
+
+<section class="panel">
+<h2>🏗️ Market Structure</h2>
+<div class="metricgrid">
+<div class="metric"><span>Struktur</span><b id="structure">-</b></div>
+<div class="metric"><span>Support visual</span><b id="support">-</b></div>
+<div class="metric"><span>Resistance visual</span><b id="resistance">-</b></div>
+<div class="metric"><span>Volume</span><b id="volume">Tidak terbaca</b></div>
+</div>
+<p class="note">Zona support dan resistance berupa posisi relatif dalam gambar, bukan level harga.</p>
+</section>
+
+<section class="panel">
+<h2>🧠 AI Decision Engine</h2>
 <div class="signal">
 <b id="signal" class="yellow">MENUNGGU</b>
-<span id="summary" class="muted">Mulai kamera untuk mengumpulkan gambar.</span>
+<span class="muted" id="confidence">Belum cukup data</span>
 </div>
-<div class="metricgrid" style="margin-top:9px">
-<div class="metric"><span>RSI perkiraan visual</span><b id="rsi">-</b></div>
-<div class="metric"><span>EMA cepat / lambat</span><b id="ema">-</b></div>
-<div class="metric"><span>Kecenderungan</span><b id="trend">-</b></div>
-<div class="metric"><span>Kualitas gambar</span><b id="quality">-</b></div>
-</div>
-<p class="note" id="reason" style="margin-bottom:0">Belum ada analisis.</p>
+<p class="note" id="decisionReason">Menunggu pemindaian.</p>
 </section>
 
 <section class="panel">
-<h2>🛡️ Pemeriksaan keamanan sinyal</h2>
-<div id="guard" class="note">Belum berjalan. Sistem akan menahan sinyal jika objek terlalu sedikit atau kualitas gambar rendah.</div>
-</section>
-
-<section class="panel warning">
-<strong>⚠️ Batasan penting versi demo</strong>
-<p class="note">Aplikasi ini tidak mengambil data harga broker, tidak membaca angka harga/OHLC secara andal, dan belum memvalidasi candle yang sudah tutup. Deteksi warna serta indikator dihitung dari perkiraan posisi objek di gambar, bukan data pasar sebenarnya. BUY/SELL/WAIT di sini adalah simulasi visual untuk pengujian, bukan rekomendasi investasi. Jangan gunakan untuk transaksi uang sungguhan.</p>
+<h2>🛡️ Risk Manager (simulasi)</h2>
+<div class="metricgrid">
+<div class="metric"><span>Entry relatif</span><b id="entry">-</b></div>
+<div class="metric"><span>Stop Loss relatif</span><b id="sl">-</b></div>
+<div class="metric"><span>Take Profit relatif</span><b id="tp">-</b></div>
+<div class="metric"><span>Risk / Reward</span><b id="rr">-</b></div>
+</div>
+<p class="note">Nilai relatif bukan harga transaksi. Sistem tidak menghitung lot atau mengirim order.</p>
 </section>
 
 <section class="panel">
-<h2>📋 Catatan pemindaian</h2>
-<div id="log" class="log">Sistem siap. Tekan Mulai Pemindaian.</div>
+<h2>🗂️ Riwayat sinyal</h2>
+<table>
+<thead><tr><th>Waktu</th><th>Hasil</th><th>Alasan</th></tr></thead>
+<tbody id="history"><tr><td colspan="3">Belum ada hasil.</td></tr></tbody>
+</table>
 </section>
 
-<footer>AI Trader Cam • Pemrosesan di perangkat • Tidak mengirim gambar ke server</footer>
+<section class="panel">
+<h2>⚙️ Status sistem dan batasan</h2>
+<div id="systemStatus" class="note">Sistem belum aktif.</div>
+<p class="note">Penting: aplikasi ini adalah prototipe visi komputer. Pengelompokan piksel belum menjamin pengenalan candle utuh. Pola, indikator, volume, OHLC, support/resistance, sinyal, Entry, SL dan TP adalah estimasi berbasis gambar. Multi-timeframe tidak bisa dianalisis bersamaan kecuali chart timeframe terkait ditampilkan dan dipindai. Jangan gunakan hasilnya untuk transaksi uang sungguhan.</p>
+</section>
+
+<section class="panel">
+<h2>📋 Log pemindaian</h2>
+<div id="log" class="log">Sistem siap.</div>
+</section>
+<footer>AI Trader Cam Pro • Pemrosesan lokal • Tidak menggunakan API</footer>
 
 <script>
 "use strict";
 
 const $=id=>document.getElementById(id);
-const video=$("video");
-const overlay=$("overlay");
-const ctx=overlay.getContext("2d");
+const video=$("video"), overlay=$("overlay"), ctx=overlay.getContext("2d");
 const work=document.createElement("canvas");
 const wctx=work.getContext("2d",{willReadFrequently:true});
 
-const W=480,H=270,INTERVAL=500;
-let stream=null;
-let running=false;
-let timer=null;
-let scans=0;
-let series=[];
-let lastLog=0;
+const W=480,H=270,INTERVAL=650;
+let stream=null,running=false,timer=null,scanNo=0,lastLog=0;
+let history=[],previousSignal="";
 
-const log=msg=>{
- const d=document.createElement("div");
- d.textContent="["+new Date().toLocaleTimeString("id-ID")+"] "+msg;
- $("log").prepend(d);
+function log(msg){
+ const el=document.createElement("div");
+ el.textContent=new Date().toLocaleTimeString("id-ID")+" • "+msg;
+ $("log").prepend(el);
  while($("log").children.length>35)$("log").lastChild.remove();
-};
-
-function stopTracks(){
- if(stream){
-  stream.getTracks().forEach(t=>t.stop());
-  stream=null;
- }
- video.srcObject=null;
 }
 
-async function startCamera(){
+async function start(){
  if(running)return;
  try{
   if(!navigator.mediaDevices?.getUserMedia)
-   throw Error("Kamera tidak tersedia. Buka halaman melalui HTTPS di Safari.");
-
+   throw Error("Kamera perlu HTTPS dan izin Safari.");
   stream=await navigator.mediaDevices.getUserMedia({
    audio:false,
-   video:{
-    facingMode:{ideal:"environment"},
-    width:{ideal:1280},
-    height:{ideal:720}
-   }
+   video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}}
   });
-
   video.srcObject=stream;
   await video.play();
-
   running=true;
-  $("start").disabled=true;
-  $("stop").disabled=false;
+  $("start").disabled=true;$("stop").disabled=false;
   $("dot").classList.add("on");
-  $("status").textContent="Kamera aktif • pemindaian otomatis";
-  $("scanline").style.display="block";
-
+  $("status").textContent="Kamera aktif • AI berjalan";
   log("Kamera aktif.");
   loop();
-
  }catch(e){
   stopTracks();
   $("status").textContent="Kamera gagal: "+e.message;
-  log("Gagal: "+e.message);
+  log("Kesalahan kamera: "+e.message);
  }
 }
 
-function stopCamera(){
- running=false;
- if(timer)clearTimeout(timer);
- timer=null;
- stopTracks();
- ctx.clearRect(0,0,overlay.width,overlay.height);
-
- $("start").disabled=false;
- $("stop").disabled=true;
- $("dot").classList.remove("on");
- $("status").textContent="Pemindaian berhenti";
- $("scanline").style.display="none";
-
- log("Pemindaian dihentikan.");
+function stopTracks(){
+ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+ video.srcObject=null;
 }
 
-function classify(r,g,b,dark){
- const max=Math.max(r,g,b);
- const min=Math.min(r,g,b);
+function stop(){
+ running=false;
+ if(timer)clearTimeout(timer);
+ timer=null;stopTracks();
+ ctx.clearRect(0,0,overlay.width,overlay.height);
+ $("start").disabled=false;$("stop").disabled=true;
+ $("dot").classList.remove("on");
+ $("status").textContent="Pemindaian berhenti";
+ log("Kamera dihentikan.");
+}
 
- if(max<65||max-min<35)return 0;
+function pixelColor(r,g,b){
+ const max=Math.max(r,g,b),min=Math.min(r,g,b);
+ if(max<65||max-min<32)return 0;
  if(g>r*1.18&&g>b*1.08&&g>75)return 1;
  if(r>g*1.2&&r>b*1.15&&r>80)return -1;
-
  return 0;
 }
 
-function detect(data){
+function inspectImage(data){
+ let brightness=0,n=0;
+ for(let i=0;i<data.length;i+=160){
+  brightness+=(data[i]+data[i+1]+data[i+2])/3;n++;
+ }
+ brightness/=Math.max(1,n);
+ const dark=brightness<115;
  const labels=new Int8Array(W*H);
  const visited=new Uint8Array(W*H);
  const objects=[];
-
- let bright=0,samples=0;
-
- for(let i=0;i<data.length;i+=4){
-  if((i/4)%9===0){
-   bright+=(data[i]+data[i+1]+data[i+2])/3;
-   samples++;
-  }
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+  const p=(y*W+x)*4;
+  labels[y*W+x]=pixelColor(data[p],data[p+1],data[p+2]);
  }
-
- const avg=bright/Math.max(1,samples);
- const dark=avg<115;
-
- for(let y=0;y<H;y++){
-  for(let x=0;x<W;x++){
-   let p=(y*W+x)*4;
-   labels[y*W+x]=classify(
-    data[p],data[p+1],data[p+2],dark
-   );
-  }
- }
-
- const qx=new Int16Array(W*H);
- const qy=new Int16Array(W*H);
-
- for(let y=0;y<H;y++){
-  for(let x=0;x<W;x++){
-   let s=y*W+x,c=labels[s];
-   if(!c||visited[s])continue;
-
-   let head=0,tail=0;
-   let minX=x,maxX=x,minY=y,maxY=y,area=0;
-
-   qx[tail]=x;
-   qy[tail]=y;
-   tail++;
-   visited[s]=1;
-
-   while(head<tail){
-    let cx=qx[head],cy=qy[head];
-    head++;
-    area++;
-
-    minX=Math.min(minX,cx);
-    maxX=Math.max(maxX,cx);
-    minY=Math.min(minY,cy);
-    maxY=Math.max(maxY,cy);
-
-    for(let dy=-1;dy<=1;dy++){
-     for(let dx=-1;dx<=1;dx++){
-      if(!dx&&!dy)continue;
-
-      let nx=cx+dx,ny=cy+dy;
-
-      if(nx<0||ny<0||nx>=W||ny>=H)continue;
-
-      let ni=ny*W+nx;
-
-      if(!visited[ni]&&labels[ni]===c){
-       visited[ni]=1;
-       qx[tail]=nx;
-       qy[tail]=ny;
-       tail++;
-      }
-     }
+ const qx=new Int16Array(W*H),qy=new Int16Array(W*H);
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+  const start=y*W+x,color=labels[start];
+  if(!color||visited[start])continue;
+  let head=0,tail=0,area=0;
+  let minX=x,maxX=x,minY=y,maxY=y;
+  qx[tail]=x;qy[tail]=y;tail++;visited[start]=1;
+  while(head<tail){
+   const cx=qx[head],cy=qy[head];head++;area++;
+   minX=Math.min(minX,cx);maxX=Math.max(maxX,cx);
+   minY=Math.min(minY,cy);maxY=Math.max(maxY,cy);
+   for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+    if(!dx&&!dy)continue;
+    const nx=cx+dx,ny=cy+dy;
+    if(nx<0||ny<0||nx>=W||ny>=H)continue;
+    const k=ny*W+nx;
+    if(!visited[k]&&labels[k]===color){
+     visited[k]=1;qx[tail]=nx;qy[tail]=ny;tail++;
     }
    }
-
-   let ww=maxX-minX+1;
-   let hh=maxY-minY+1;
-
-   if(area>=5&&ww<=24&&hh>=3&&hh<=150){
-    objects.push({
-     x:minX,y:minY,w:ww,h:hh,c,area,
-     cx:(minX+maxX)/2,
-     cy:(minY+maxY)/2
-    });
-   }
-
-   if(objects.length>=120)return {objects,dark,avg};
   }
- }
-
- return {objects,dark,avg};
-}
-
-function quality(data){
- let sum=0,n=0;
-
- for(let i=0;i<data.length;i+=64){
-  sum+=(data[i]+data[i+1]+data[i+2])/3;
-  n++;
- }
-
- let b=sum/Math.max(1,n);
- let score=100;
-
- if(b<30)score-=45;
- if(b>235)score-=30;
- if(b>100&&b<135)score-=5;
-
- return {score:Math.max(0,score),brightness:b};
-}
-
-function groupCandles(objects){
- const sorted=[...objects].sort((a,b)=>a.cx-b.cx);
- const groups=[];
-
- for(const o of sorted){
-  let g=groups.find(v=>Math.abs(v.x-o.cx)<7);
-
-  if(!g){
-   g={
-    x:o.cx,y:o.cy,weight:o.area,
-    color:o.c,n:1
-   };
-   groups.push(g);
-  }else{
-   g.y=(g.y*g.weight+o.cy*o.area)/(g.weight+o.area);
-   g.weight+=o.area;
-   g.color+=o.c;
-   g.n++;
+  const ww=maxX-minX+1,hh=maxY-minY+1;
+  if(area>=5&&ww<=28&&hh>=3&&hh<=160){
+   objects.push({x:minX,y:minY,w:ww,h:hh,color,area});
   }
+  if(objects.length>=180)return {objects,dark,brightness};
  }
-
- return groups.filter(g=>g.n<=8)
-  .sort((a,b)=>a.x-b.x)
-  .slice(-40);
+ return {objects,dark,brightness};
 }
 
-function ema(values,period){
- if(!values.length)return null;
- let k=2/(period+1),v=values[0];
+/* Approximate candle candidates from colored pixel groups.
+   This is not a reliable OHLC reader. */
+function buildBars(objects){
+ const cols=new Map();
+ for(const o of objects){
+  const center=Math.round((o.x+o.w/2)/3)*3;
+  if(!cols.has(center))cols.set(center,[]);
+  cols.get(center).push(o);
+ }
+ const bars=[];
+ for(const [x,items] of cols){
+  const ys=items.flatMap(o=>[o.y,o.y+o.h]);
+  const high=Math.min(...ys),low=Math.max(...ys);
+  const bodyTop=Math.min(...items.map(o=>o.y));
+  const bodyBottom=Math.max(...items.map(o=>o.y+o.h));
+  const green=items.filter(o=>o.color===1).reduce((a,o)=>a+o.area,0);
+  const red=items.filter(o=>o.color===-1).reduce((a,o)=>a+o.area,0);
+  bars.push({
+   x,high,low,open:bodyBottom,close:bodyTop,
+   color:green>=red?1:-1,
+   strength:Math.abs(green-red)/(green+red+1)
+  });
+ }
+ return bars.sort((a,b)=>a.x-b.x).slice(-60);
+}
 
- for(let i=1;i<values.length;i++)
-  v=values[i]*k+v*(1-k);
+function draw(objects,bars){
+ ctx.clearRect(0,0,W,H);
+ for(const o of objects){
+  ctx.strokeStyle=o.color===1?"#20d99a":"#ff6477";
+  ctx.lineWidth=1.4;ctx.strokeRect(o.x,o.y,o.w,o.h);
+ }
+ for(const b of bars){
+  ctx.fillStyle=b.color===1?"#20d99a":"#ff6477";
+  ctx.fillRect(b.x-1,b.high,2,Math.max(3,b.low-b.high));
+ }
+}
 
+function ema(a,p){
+ if(!a.length)return null;
+ const k=2/(p+1);let v=a[0];
+ for(let i=1;i<a.length;i++)v=a[i]*k+v*(1-k);
  return v;
 }
-
-function calcRSI(values,p=14){
- if(values.length<=p)return null;
-
- let up=0,down=0;
-
- for(let i=values.length-p;i<values.length;i++){
-  let d=values[i]-values[i-1];
-  if(d>0)up+=d;
-  else down-=d;
+function rsi(a,p=14){
+ if(a.length<=p)return null;
+ let up=0,dn=0;
+ for(let i=a.length-p;i<a.length;i++){
+  const d=a[i]-a[i-1];if(d>0)up+=d;else dn-=d;
  }
-
- if(down===0)return 100;
-
- return 100-100/(1+up/down);
+ if(dn===0)return 100;
+ return 100-100/(1+up/dn);
 }
-
-function analyze(groups){
- const values=groups.map(g=>H-g.y);
-
- if(values.length<16){
-  return {
-   signal:"MENUNGGU",
-   trend:"Data kurang",
-   rsi:null,
-   ema:null,
-   reason:"Butuh setidaknya 16 kelompok posisi yang terdeteksi. Ini masih data visual, bukan data OHLC."
-  };
- }
-
- const fast=ema(values.slice(-30),5);
- const slow=ema(values.slice(-30),13);
- const rsi=calcRSI(values,14);
-
- const rising=values.at(-1)>values.at(-5);
- const falling=values.at(-1)<values.at(-5);
-
- let trend=fast>slow?"Naik":fast<slow?"Turun":"Datar";
- let signal="WAIT";
- let reason="Indikator visual belum searah atau belum cukup kuat.";
-
- if(fast>slow&&rising&&rsi!==null&&rsi<70){
-  signal="BUY";
-  reason="Perkiraan posisi objek terbaru naik, EMA visual cepat di atas lambat, dan RSI visual belum tinggi.";
- }
-
- if(fast<slow&&falling&&rsi!==null&&rsi>30){
-  signal="SELL";
-  reason="Perkiraan posisi objek terbaru turun, EMA visual cepat di bawah lambat, dan RSI visual belum rendah.";
- }
-
- if(rsi!==null&&(rsi>=70||rsi<=30)){
-  signal="WAIT";
-  reason="RSI visual berada di area ekstrem. Sistem menahan sinyal.";
- }
-
+function macd(a){
+ if(a.length<26)return null;
+ return ema(a,12)-ema(a,26);
+}
+function bollinger(a){
+ if(a.length<20)return null;
+ const v=a.slice(-20),mean=v.reduce((x,y)=>x+y,0)/20;
+ const sd=Math.sqrt(v.reduce((s,x)=>s+(x-mean)**2,0)/20);
+ return {upper:mean+2*sd,lower:mean-2*sd,mid:mean};
+}
+function candlePattern(bars){
+ if(bars.length<3)return "Data candle kurang";
+ const b=bars.at(-1),p=bars.at(-2);
+ const body=Math.abs(b.close-b.open);
+ const range=Math.max(1,b.low-b.high);
+ const upper=Math.max(0,b.high-Math.min(b.open,b.close));
+ const lower=Math.max(0,Math.max(b.open,b.close)-b.low);
+ if(body/range<0.12)return "Doji perkiraan";
+ if(lower>body*2&&upper<body)return "Hammer perkiraan";
+ if(upper>body*2&&lower<body)return "Shooting Star perkiraan";
+ const prevBull=p.color===1,curBull=b.color===1;
+ if(prevBull!==curBull&&body>Math.abs(p.close-p.open)*1.1)
+  return curBull?"Bullish Engulfing?":"Bearish Engulfing?";
+ return curBull?"Bullish candle?":"Bearish candle?";
+}
+function marketStructure(bars){
+ if(bars.length<6)return "Data kurang";
+ const recent=bars.slice(-6);
+ const closes=recent.map(b=>(b.high+b.low)/2);
+ const first=closes.slice(0,3).reduce((a,b)=>a+b,0)/3;
+ const last=closes.slice(3).reduce((a,b)=>a+b,0)/3;
+ return last>first+2?"Higher / naik?":last<first-2?"Lower / turun?":"Sideways?";
+}
+function supportResistance(bars){
+ if(!bars.length)return {s:null,r:null};
+ const recent=bars.slice(-20);
  return {
-  signal,trend,rsi,
-  ema:`${fast.toFixed(1)} / ${slow.toFixed(1)}`,
-  reason
+  s:Math.max(...recent.map(b=>b.high)),
+  r:Math.min(...recent.map(b=>b.low))
  };
 }
-
-function draw(objects){
- ctx.clearRect(0,0,W,H);
-
- for(const o of objects){
-  ctx.strokeStyle=o.c===1?"#20d99a":"#ff6477";
-  ctx.lineWidth=1.5;
-  ctx.strokeRect(o.x,o.y,o.w,o.h);
+function quality(data){
+ let sum=0,n=0;
+ for(let i=0;i<data.length;i+=64){
+  sum+=(data[i]+data[i+1]+data[i+2])/3;n++;
  }
+ const b=sum/Math.max(1,n);
+ let score=100;
+ if(b<30)score-=40;
+ if(b>235)score-=30;
+ return Math.max(0,score);
+}
+
+function analyze(objects,bars,q){
+ const closes=bars.map(b=>(b.open+b.close)/2);
+ const e5=ema(closes,5),e13=ema(closes,13);
+ const rv=rsi(closes),m=macd(closes),bb=bollinger(closes);
+ const pattern=candlePattern(bars);
+ const structure=marketStructure(bars);
+ const sr=supportResistance(bars);
+ const enough=bars.length>=Number($("minbars").value);
+ let trend="Belum jelas",momentum="Belum jelas",signal="WAIT";
+ let reasons=[];
+ if(e5!==null&&e13!==null){
+  trend=e5>e13?"Naik?":e5<e13?"Turun?":"Datar?";
+  if(e5>e13)reasons.push("EMA visual cepat di atas lambat");
+  if(e5<e13)reasons.push("EMA visual cepat di bawah lambat");
+ }
+ if(closes.length>=4){
+  momentum=closes.at(-1)>closes.at(-4)?"Menguat?":
+   closes.at(-1)<closes.at(-4)?"Melemah?":"Netral?";
+ }
+ let score=0;
+ if(e5!==null&&e13!==null)score+=e5>e13?1:-1;
+ if(closes.length>=4)score+=closes.at(-1)>closes.at(-4)?1:-1;
+ if(rv!==null&&rv<70&&rv>30)score+=score>0?1:score<0?-1:0;
+ if(bars.length&&bars.at(-1).color===1)score+=1;
+ if(bars.length&&bars.at(-1).color===-1)score-=1;
+ if(enough&&q>=60&&Math.abs(score)>=3){
+  signal=score>0?"BUY":"SELL";
+ }else{
+  signal="WAIT";
+  reasons.push("Syarat jumlah candle, kualitas, atau keselarasan belum cukup");
+ }
+ if(rv!==null&&(rv>70||rv<30)){signal="WAIT";reasons.push("RSI visual ekstrem")}
+ const confidence=Math.min(85,Math.round(Math.abs(score)/5*100));
+ return {signal,trend,momentum,rv,e5,e13,m,bb,pattern,structure,sr,confidence,
+  reason:reasons.join("; ")||"Belum ada konfirmasi cukup."};
+}
+
+function updateHistory(signal,reason){
+ if(signal===previousSignal)return;
+ previousSignal=signal;
+ const row=document.createElement("tr");
+ const t=document.createElement("td");t.textContent=new Date().toLocaleTimeString("id-ID");
+ const s=document.createElement("td");s.textContent=signal;
+ const r=document.createElement("td");r.textContent=reason.slice(0,70);
+ row.append(t,s,r);$("history").prepend(row);
+ while($("history").children.length>15)$("history").lastChild.remove();
+}
+
+function render(objects,bars,info,q,a){
+ const green=objects.filter(o=>o.color===1).length;
+ const red=objects.filter(o=>o.color===-1).length;
+ $("greenCount").textContent=green;
+ $("redCount").textContent=red;
+ $("barCount").textContent=bars.length;
+ $("theme").textContent="Tema: "+(info.dark?"gelap":"terang");
+ $("quality").textContent="Kualitas: "+q+"/100";
+ $("scanCount").textContent="Scan: "+scanNo;
+ $("visionNote").textContent="Objek warna: "+objects.length+
+  ". Kandidat kelompok candle: "+bars.length+
+  ". Belum diverifikasi sebagai candle sungguhan.";
+
+ $("pattern").textContent=a.pattern;
+ $("lastCandle").textContent=bars.length?(bars.at(-1).color===1?"Hijau?":"Merah?"):"-";
+ if(bars.length){
+  const b=bars.at(-1);
+  $("oc").textContent=b.open.toFixed(0)+" / "+b.close.toFixed(0);
+  $("hl").textContent=b.high.toFixed(0)+" / "+b.low.toFixed(0);
+ }else{$("oc").textContent="-";$("hl").textContent="-"}
+ $("rsi").textContent=a.rv===null?"-":a.rv.toFixed(1)+"?";
+ $("ema").textContent=a.e5===null?"-":a.e5.toFixed(1)+" / "+a.e13.toFixed(1);
+ $("macd").textContent=a.m===null?"-":a.m.toFixed(2)+"?";
+ $("bb").textContent=a.bb===null?"-":a.bb.lower.toFixed(1)+"–"+a.bb.upper.toFixed(1);
+ $("trend").textContent=a.trend;
+ $("momentum").textContent=a.momentum;
+ $("structure").textContent=a.structure;
+ $("support").textContent=a.sr.s===null?"-":a.sr.s.toFixed(0)+" px";
+ $("resistance").textContent=a.sr.r===null?"-":a.sr.r.toFixed(0)+" px";
+ $("volume").textContent="Belum tersedia";
+ $("signal").textContent=a.signal;
+ $("signal").className=a.signal==="BUY"?"green":a.signal==="SELL"?"red":"yellow";
+ $("confidence").textContent="Skor keselarasan visual: "+a.confidence+"% (bukan probabilitas profit)";
+ $("decisionReason").textContent=a.reason;
+ const entry=bars.length?(bars.at(-1).high+bars.at(-1).low)/2:null;
+ const sl=bars.length?bars.at(-1).low:null;
+ const tp=bars.length?bars.at(-1).high:null;
+ $("entry").textContent=entry===null?"-":entry.toFixed(1)+" px";
+ $("sl").textContent=sl===null?"-":sl.toFixed(1)+" px";
+ $("tp").textContent=tp===null?"-":tp.toFixed(1)+" px";
+ $("rr").textContent="1:1 visual";
+ $("systemStatus").textContent=
+  "Kamera aktif. Instrumen label: "+$("symbol").value+
+  ". Timeframe label: "+$("tf").value+
+  ". Kandidat candle: "+bars.length+
+  ". Semua angka harga adalah koordinat gambar, bukan harga pasar.";
+ $("candleNote").textContent=
+  "OHLC relatif hanya perkiraan bounding box warna. Open/Close belum dibaca dari sumbu candle secara andal.";
+ updateHistory(a.signal,a.reason);
 }
 
 function scan(){
  if(!running||video.readyState<2)return;
-
- work.width=W;
- work.height=H;
- overlay.width=W;
- overlay.height=H;
-
+ work.width=W;work.height=H;overlay.width=W;overlay.height=H;
  wctx.drawImage(video,0,0,W,H);
-
  const image=wctx.getImageData(0,0,W,H);
  const q=quality(image.data);
- const found=detect(image.data);
- const objects=found.objects;
-
- draw(objects);
-
- const green=objects.filter(o=>o.c===1).length;
- const red=objects.filter(o=>o.c===-1).length;
-
- const groups=groupCandles(objects);
-
- if(groups.length){
-  series.push(...groups.slice(-8).map(g=>H-g.y));
-  series=series.slice(-120);
- }
-
- const a=analyze(groups.length>=16?groups:[]);
- const safe=objects.length>=12&&q.score>=55&&groups.length>=8;
-
- $("greens").textContent=green;
- $("reds").textContent=red;
- $("total").textContent=objects.length;
-
- $("theme").textContent="Latar: "+(found.dark?"gelap":"terang");
- $("fps").textContent="Pemindaian: "+(++scans);
- $("quality").textContent=q.score+"/100";
- $("rsi").textContent=a.rsi===null?"-":a.rsi.toFixed(1);
- $("ema").textContent=a.ema||"-";
- $("trend").textContent=a.trend;
-
- let signal=safe?a.signal:"WAIT";
-
- $("signal").textContent=signal;
- $("signal").className=
-  signal==="BUY"?"green":
-  signal==="SELL"?"red":"yellow";
-
- $("summary").textContent=safe
-  ?"Indikasi visual demo, bukan sinyal pasar tervalidasi."
-  :"Menunggu gambar dan objek yang cukup jelas.";
-
- $("reason").textContent=
-  a.reason+" Kelompok terpisah terdeteksi: "+groups.length+".";
-
- $("guard").textContent=safe
-  ?"Pemeriksaan dasar lolos. Tetap jangan gunakan untuk transaksi nyata; data harga broker dan OHLC belum diverifikasi."
-  :"Sinyal ditahan: objek sedikit atau gambar belum cukup baik.";
-
- if(Date.now()-lastLog>5000){
-  log(`Objek ${objects.length}, kelompok ${groups.length}, mutu ${q.score}/100, latar ${found.dark?"gelap":"terang"}.`);
+ const info=inspectImage(image.data);
+ const objects=info.objects;
+ const bars=buildBars(objects);
+ draw(objects,bars);
+ const a=analyze(objects,bars,q);
+ scanNo++;
+ render(objects,bars,info,q,a);
+ if(Date.now()-lastLog>6000){
+  log("Scan "+scanNo+": "+objects.length+" objek, "+bars.length+
+   " kandidat candle, kualitas "+q+"/100, hasil "+a.signal);
   lastLog=Date.now();
  }
 }
-
 function loop(){
  if(!running)return;
-
- try{scan()}
- catch(e){log("Kesalahan pemindaian: "+e.message)}
-
+ try{scan()}catch(e){log("Kesalahan: "+e.message)}
  if(running)timer=setTimeout(loop,INTERVAL);
 }
-
-$("start").addEventListener("click",startCamera);
-$("stop").addEventListener("click",stopCamera);
-window.addEventListener("pagehide",stopCamera);
-
-log("Sistem siap. Tidak memakai API atau mengirim gambar ke server.");
+$("start").addEventListener("click",start);
+$("stop").addEventListener("click",stop);
+window.addEventListener("pagehide",stop);
+log("AI Trader Cam Pro siap. Tidak menggunakan API.");
 </script>
 </body>
 </html>
